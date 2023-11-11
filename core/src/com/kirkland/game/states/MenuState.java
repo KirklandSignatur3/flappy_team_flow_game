@@ -19,7 +19,13 @@ public class MenuState extends State{
     @Override
     protected void handleInput() {
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            gsm.set(new PlayState(gsm)); //creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerCoopState(gsm)); //creates a new Play State at the top of the stack
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+            gsm.set(new TwoPlayerVsState(gsm)); //creates a new Play State at the top of the stack
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+            gsm.set(new TwoPlayerCoopCoinsState(gsm)); //creates a new Play State at the top of the stack
         }
 
     }

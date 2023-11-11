@@ -2,7 +2,6 @@ package com.kirkland.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,15 +9,13 @@ import com.kirkland.game.flappy_game;
 import com.kirkland.game.sprites.Pipe;
 import com.kirkland.game.sprites.Player;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class PlayState extends State{
+public class TwoPlayerCoopState extends State{
     public static final int PIPE_SPACING = 125;
     private static final int PIPE_COUNT = 4;
     private Player player;
     private Texture bg;
-
     private int TURN = 1;
     private boolean PAUSE = false;
 
@@ -33,7 +30,7 @@ public class PlayState extends State{
 
 //    private Texture player;
 
-    public PlayState(GameStateManager gsm) {
+    public TwoPlayerCoopState(GameStateManager gsm) {
         super(gsm);
         player = new Player(50,300);
         cam.setToOrtho(false, flappy_game.WIDTH/2, flappy_game.HEIGHT/2);
@@ -94,7 +91,7 @@ public class PlayState extends State{
                 }
 
                 if(pipe.collides((player.getBounds()))) { //check if hit pipe
-                    gsm.set(new PlayState(gsm));
+                    gsm.set(new TwoPlayerCoopState(gsm));
                 }
 
                 if(pipe.scores(player.getBounds()) ){
