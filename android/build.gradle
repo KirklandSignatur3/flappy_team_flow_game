@@ -32,6 +32,13 @@ android {
     }
 }
 
+dependencies {
+    implementation files('..\\desktop\\build\\libs\\jSerialComm-2.10.4.jar')
+    implementation files('..\\desktop\\build\\libs\\opencsv-5.9.jar')
+    implementation files('..\\core\\build\\libs\\jSerialComm-2.10.4.jar')
+    implementation files('..\\core\\build\\libs\\opencsv-5.9.jar')
+}
+
 
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders

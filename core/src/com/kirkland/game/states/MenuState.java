@@ -1,10 +1,14 @@
 package com.kirkland.game.states;
 
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.kirkland.game.flappy_game;
+
+
+
 
 public class MenuState extends State{
     private Texture background;
@@ -19,8 +23,21 @@ public class MenuState extends State{
     @Override
     protected void handleInput() {
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            gsm.set(new PlayState(gsm)); //creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerCoopState(gsm)); //creates a new Play State at the top of the stack
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+            gsm.set(new TwoPlayerVsState(gsm)); //creates a new Play State at the top of the stack
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){ // for the TwoPlayerCoopCoinsState
+            gsm.set(new TwoPlayerCoopCoinsState(gsm)); //creates a new Play State at the top of the stack
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){ // for the TwoPlayerCoopTimingCoinsState
+            gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //creates a new Play State at the top of the stack
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){ // for the TwoPlayerCollisionCoinsState
+            gsm.set(new TwoPlayerCollisionCoinsState(gsm)); //creates a new Play State at the top of the stack
+        }
+
 
     }
 
