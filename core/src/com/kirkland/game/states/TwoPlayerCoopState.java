@@ -52,9 +52,7 @@ public class TwoPlayerCoopState extends State{
 
     @Override
     protected void handleInput() {
-//      if(Gdx.input.justTouched()){
-//            player.jump();
-//      }
+
         if(TURN==1 && Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)){
             player.jump();
             TURN = 2;

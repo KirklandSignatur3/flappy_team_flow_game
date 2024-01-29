@@ -6,7 +6,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.kirkland.game.flappy_game;
+import org.apache.commons.csv.*;
+import java.io.FileWriter;
+import java.io.IOException;
 
+////
+
+import com.sun.jna.*;
+import com.sun.jna.ptr.*;
+import com.labjack.LJUD;
+import com.labjack.LJUDException;
 
 
 
@@ -22,6 +31,7 @@ public class MenuState extends State{
     }
     @Override
     protected void handleInput() {
+        // SWITCH TO SWITCH STATEMENT?
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
             gsm.set(new TwoPlayerCoopState(gsm)); //creates a new Play State at the top of the stack
         }
@@ -36,6 +46,81 @@ public class MenuState extends State{
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){ // for the TwoPlayerCollisionCoinsState
             gsm.set(new TwoPlayerCollisionCoinsState(gsm)); //creates a new Play State at the top of the stack
+        }
+
+        // testing the labjack
+        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){ // for the TwoPlayerCollisionCoinsState
+            try {
+                int intHandle = 0;
+                IntByReference refHandle =
+                        new IntByReference(0);
+
+                DoubleByReference refVoltage =
+                        new DoubleByReference(0.0);
+                //Positive channel = 1 (AIN1)
+                int posChannel = 1;
+                //Negative channel = 199 (single-ended)
+                int negChannel = 199;
+                //Range = +/- 10V
+                int range = LJUD.Constants.rgBIP10V;
+                //Resolution Index = 8 (Effective resolution with
+                //                      +/- 10V range = 16 bits)
+                int resolutionIndex = 1;
+                //Settling = 0 (Auto)
+                int settling = 0;
+
+                //Open the first found LabJack U3.
+                LJUD.openLabJack(LJUD.Constants.dtU3,
+                        LJUD.Constants.ctUSB, "1", 1, refHandle);
+                intHandle = refHandle.getValue();
+
+                //Take a measurement from AIN1 and display it.
+//                LJUD.eDO(intHandle, 0, 1);
+//                LJUD.eDO(intHandle, 0, 0);
+                LJUD.ePut(intHandle, LJUD.Constants.ioPUT_ANALOG_ENABLE_BIT,0, 2.50, 0);
+
+//                for (int i = 0; i < 16; i++){
+//                    System.out.println(i);
+//                    LJUD.eDAC(intHandle, i, 2.50,0,0,0);
+//                }
+                LJUD.eDAC(intHandle, 0, 2.50,0,0,0);
+
+
+                System.out.println("AIN" + posChannel + " = " +
+                        refVoltage.getValue() + " volts");
+            }
+            catch(LJUDException le) {
+                le.printStackTrace();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+             //creates a new Play State at the top of the stack
+        }
+
+
+        // tesgint hte csv writng
+        if(Gdx.input.isKeyJustPressed(Input.Keys.C)){ // for the TwoPlayerCollisionCoinsState
+
+            // Test for writing csv files
+            String outputFile = "C:/Users/maxwe/Documents/SCHOOL/SURF/Team flow/Gameplay data/bruh.csv";
+            try (
+                    // Create a FileWriter with the specified file path
+                    FileWriter fileWriter = new FileWriter(outputFile);
+                    // Create a CSVPrinter with the FileWriter and the CSVFormat
+                    CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader("Header1", "Header2", "Header3"))
+            ) {
+                // Write data to the CSV file
+                csvPrinter.printRecord("Value1A", "Value1B", "Value1C");
+                csvPrinter.printRecord("Value2A", "Value2B", "Value2C");
+
+                System.out.println("CSV file written successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
         }
 
 

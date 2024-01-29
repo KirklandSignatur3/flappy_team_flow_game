@@ -1,4 +1,9 @@
 sourceCompatibility = 1.7
+dependencies {
+    implementation files('build\\libs\\ljm.jar')
+    implementation files('build\\libs\\jna.jar')
+    implementation files('build\\libs\\ljud.jar')
+}
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = [ "src/" ]
