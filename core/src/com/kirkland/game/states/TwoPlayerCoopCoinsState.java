@@ -47,7 +47,7 @@ public class TwoPlayerCoopCoinsState extends State{
         coins = new ArrayList<Coin>();
 
         for(int i = 0; i< COIN_COUNT; i++){ //keep a list of coins. do not reposition them, just
-            coins.add(new Coin(i* (COIN_SPACING + Coin.COIN_WIDTH )));
+            coins.add(new Coin(i* (COIN_SPACING + Coin.COIN_WIDTH ),0,1));
         }
 
     }
@@ -81,7 +81,8 @@ public class TwoPlayerCoopCoinsState extends State{
     public void update(float dt) {
         handleInput();
         if (!PAUSE){
-            player.setSpeed(default_player_speed*( 1f + (streak / 10f) ));
+            // streak toggle //
+//            player.setSpeed(default_player_speed*( 1f + (streak / 10f) ));
 //            player.update(dt  *(1f+(streak/2f)) );
 
             player.update(dt);

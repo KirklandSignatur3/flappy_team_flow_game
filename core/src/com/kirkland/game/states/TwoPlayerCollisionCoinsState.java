@@ -54,7 +54,7 @@ public class TwoPlayerCollisionCoinsState extends State{
         coins = new ArrayList<Coin>();
 
         for(int i = 0; i< COIN_COUNT; i++){ //keep a list of coins. do not reposition them, just
-            coins.add(new Coin(i* (COIN_SPACING + Coin.COIN_WIDTH )));
+            coins.add(new Coin(i* (COIN_SPACING + Coin.COIN_WIDTH ),0,1) );
         }
 
     }

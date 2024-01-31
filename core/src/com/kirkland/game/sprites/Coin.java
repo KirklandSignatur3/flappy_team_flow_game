@@ -12,6 +12,7 @@ public class Coin {
     // contains a top pipe, a bottom pipe, and a line thru the middle for the score line
     // points are added
     private static final int FLUCTUATION = 300;
+    private static final int CLOSE_FLUCTUATION = 200;
     private static final int PIPE_GAP = 100; //gap between top and bottom
     private static final int LOWEST_SPAWN = 25; //
     public static final int COIN_WIDTH = 50;
@@ -20,12 +21,25 @@ public class Coin {
     private Rectangle boundsTop, boundsBottom, bounds;
     private Random rand;
     private boolean hit;
-    public Coin(float x){
+    public Coin(float x, float y, int type){
         coin = new Texture("coin.png"); //pipe_top.png
         rand = new Random();
         hit = false; //whether or not the player has hit it yet
 
-        pos = new Vector2(x, rand.nextInt(FLUCTUATION) + LOWEST_SPAWN);
+        switch (type){
+            case 1:
+                pos = new Vector2(x, rand.nextInt(FLUCTUATION) + LOWEST_SPAWN);
+            case 2: // close to previous
+                float new_y = y + (rand.nextInt(CLOSE_FLUCTUATION) -(CLOSE_FLUCTUATION/2f));
+                if (new_y < LOWEST_SPAWN){
+                    new_y = LOWEST_SPAWN;
+                } else if (new_y > 800) {
+                    new_y = 800-COIN_WIDTH - CLOSE_FLUCTUATION/2f;
+                }
+
+                pos = new Vector2(x, new_y);
+        }
+
         //the bottom right of the image is where the image spawns
         bounds = new Rectangle(pos.x, pos.y, COIN_WIDTH, COIN_WIDTH);
     }
@@ -39,6 +53,19 @@ public class Coin {
     public void reposition(float x){
         // moves the pipes to the right again, but at a new height
         pos = new Vector2(x, rand.nextInt(FLUCTUATION)  + LOWEST_SPAWN);
+        bounds.setPosition(pos.x, pos.y);
+        hit = false;
+    }
+    public void close_reposition(float x, float y){
+        // moves the pipes to the right again, but at a new height
+        float new_y = y + (rand.nextInt(CLOSE_FLUCTUATION) -(CLOSE_FLUCTUATION/2f) );
+        if (new_y < LOWEST_SPAWN){
+            new_y = LOWEST_SPAWN;
+        } else if (new_y > 400 -COIN_WIDTH) {
+            new_y = 400 - CLOSE_FLUCTUATION - COIN_WIDTH;
+        }
+        pos = new Vector2(x, new_y);
+        System.out.println("new y =" + new_y);
         bounds.setPosition(pos.x, pos.y);
         hit = false;
     }

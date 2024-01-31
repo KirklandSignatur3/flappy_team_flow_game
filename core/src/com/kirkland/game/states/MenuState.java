@@ -9,6 +9,10 @@ import com.kirkland.game.flappy_game;
 import org.apache.commons.csv.*;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 ////
 
@@ -49,7 +53,7 @@ public class MenuState extends State{
         }
 
         // testing the labjack
-        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){ // for the TwoPlayerCollisionCoinsState
+        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
             try {
                 int intHandle = 0;
                 IntByReference refHandle =
@@ -95,31 +99,31 @@ public class MenuState extends State{
             catch (Exception e) {
                 e.printStackTrace();
             }
-
-             //creates a new Play State at the top of the stack
         }
 
 
         // tesgint hte csv writng
-        if(Gdx.input.isKeyJustPressed(Input.Keys.C)){ // for the TwoPlayerCollisionCoinsState
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
             // Test for writing csv files
-            String outputFile = "C:/Users/maxwe/Documents/SCHOOL/SURF/Team flow/Gameplay data/bruh.csv";
+            LocalDateTime date = java.time.LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd_H.m.s");
+            String formatted_date = date.format(formatter);
+            String outputFile = "C:/Users/maxwe/Documents/SCHOOL/SURF/Team flow/Gameplay data/bruh_" +formatted_date +".csv";
             try (
                     // Create a FileWriter with the specified file path
                     FileWriter fileWriter = new FileWriter(outputFile);
                     // Create a CSVPrinter with the FileWriter and the CSVFormat
                     CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader("Header1", "Header2", "Header3"))
+
             ) {
                 // Write data to the CSV file
-                csvPrinter.printRecord("Value1A", "Value1B", "Value1C");
-                csvPrinter.printRecord("Value2A", "Value2B", "Value2C");
+                csvPrinter.printRecord(1, "Value1B", "Value1C");
+                csvPrinter.printRecord("Value2A", 0, 300);
 
                 System.out.println("CSV file written successfully!");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 
         }
 
