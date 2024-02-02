@@ -43,7 +43,7 @@ public class MenuState extends State{
             gsm.set(new TwoPlayerVsState(gsm)); //creates a new Play State at the top of the stack
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){ // for the TwoPlayerCoopCoinsState
-            gsm.set(new TwoPlayerCoopCoinsState(gsm)); //creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerCoopCoinsStateV2(gsm)); //creates a new Play State at the top of the stack
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){ // for the TwoPlayerCoopTimingCoinsState
             gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //creates a new Play State at the top of the stack

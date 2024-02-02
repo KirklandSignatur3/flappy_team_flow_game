@@ -26,12 +26,13 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     public final int START_GAP = 300;// 125
     private static final int COIN_COUNT = 4; //4 //4*125 = 500
 
-    private static final float GAME_DURATION = 30;
+    private static final float GAME_DURATION = 180;
     private float time = 0;
+    private int default_player_speed = 100;
     private Player player;
     private Texture bg;
     private int streak = 0;
-    private int speed_mod = 0;
+    private float speed_mod = 0;
 
     private boolean one_pressed = false;
     private boolean two_pressed = false;
@@ -146,7 +147,13 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                 two_pressed = false;
                 jump_time = 0;
             }
-            player.update(dt);
+
+            /////// STREAK TOGGLE
+            player.setSpeed(default_player_speed*( 1f + (streak / 10f) )); //move to coin collision event
+            player.update(dt );
+//            player.update(dt*(1f+(streak/2f));
+
+
             cam.position.x = player.getPosition().x+80; //offset cam a bit in front of player
             //how to reposition thetubes
 
@@ -158,6 +165,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                     // reposition closer to last coin
                     if (!coin.isHit()){
                         log.log_event(time, Log.MISS_COIN);
+                        streak = 0;
                     }
 
                     coin.close_reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT),
@@ -176,6 +184,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                     log.log_event(time, Log.HIT_COIN);
                     score++;
                     streak++;
+//                    speed_mod
                     ScoreStr = "Score: " + score;
                     System.out.println("SCOREEEE");
 
@@ -210,7 +219,8 @@ public class TwoPlayerCoopTimingCoinsState extends State{
         jump_time_str = "Time: " + (jump_time_window - jump_time);
 //        System.out.println((jump_time_window - jump_time));
         font.draw(sb, jump_time_str, 500, 500);
-        font.draw(sb, "time:"+time, player.getPosition().x-100, 300);
+
+        font.draw(sb, "Total Time: "+String.format("%.1f", time)+ "   Streak: " + streak, player.getPosition().x-100, 375);
 
         sb.end(); //close it...
 
