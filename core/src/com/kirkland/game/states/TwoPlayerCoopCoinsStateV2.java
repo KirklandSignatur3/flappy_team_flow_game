@@ -66,7 +66,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
 //            coins.add(new Coin(i* (COIN_SPACING + Coin.COIN_WIDTH ), 0, 1));
             coins.add(new Coin(START_GAP + i* (COIN_SPACING + Coin.COIN_WIDTH ), (coins.get(i-1)).getPos().y, 2));
         }
-        log.log_event(time,Log.START_GAME);
+        log.log_event(time,Log.START_GAME, 0);
 
 
     }
@@ -78,20 +78,20 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
         if(Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)){
             if(TURN == 1){
                 player.jump();
-                log.log_event(time, Log.P1_JUMP);
+                log.log_event(time, Log.P1_JUMP, player.getPosition().y);
                 TURN = 2;
             } else{
-                log.log_event(time, Log.P1_OFF_TIME_PRESS);
+                log.log_event(time, Log.P1_OFF_TIME_PRESS, player.getPosition().y);
             }
 
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)){
             if(TURN == 2){
                 player.jump();
-                log.log_event(time, Log.P2_JUMP);
+                log.log_event(time, Log.P2_JUMP, player.getPosition().y);
                 TURN = 1;
             } else{
-                log.log_event(time, Log.P2_OFF_TIME_PRESS);
+                log.log_event(time, Log.P2_OFF_TIME_PRESS, player.getPosition().y);
             }
 
         }
@@ -115,7 +115,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
         if (!PAUSE){
             time += dt;
             if (time>GAME_DURATION){
-                log.log_event(time, Log.END_GAME);
+                log.log_event(time, Log.END_GAME, 0);
                 log.close();
                 gsm.set(new MenuState(gsm));
             }
@@ -147,7 +147,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
 //                    coin.reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT));
                     // reposition closer to last coin
                     if (!coin.isHit()){
-                        log.log_event(time, Log.MISS_COIN);
+                        log.log_event(time, Log.MISS_COIN, coin.getPos().y);
                         streak = 0;
                     }
 
@@ -164,7 +164,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
 //                }
 
                 if(coin.collides(player.getBounds()) ){ // CHECK IF A PALYER TOUCHES COIN
-                    log.log_event(time, Log.HIT_COIN);
+                    log.log_event(time, Log.HIT_COIN, coin.getPos().y);
                     score++;
                     streak++;
                     ScoreStr = "Score: " + score;

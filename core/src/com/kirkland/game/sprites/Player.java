@@ -59,6 +59,7 @@ public class Player {
     public void setSpeed(float new_speed){
         Speed = new_speed;
     }
+
     public float getSpeed(){return Speed;}
 
 

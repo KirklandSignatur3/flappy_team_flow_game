@@ -24,10 +24,12 @@ import java.time.LocalDate;
 public class TwoPlayerCoopTimingCoinsState extends State{
     public final int COIN_SPACING = 125;// 125
     public final int START_GAP = 300;// 125
-    private static final int COIN_COUNT = 4; //4 //4*125 = 500
+    private static final int COIN_COUNT = 8; //4 //4*125 = 500
 
     private static final float GAME_DURATION = 180;
     private float time = 0;
+    private float player_pos_cooldown  = 0; // timer for recording player pos
+    private final float player_pos_rate  = .1f; // records player postion every 50 ms (
     private int default_player_speed = 100;
     private Player player;
     private Texture bg;
@@ -44,6 +46,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
 //    private Array<Pipe> pipes;
     private ArrayList<Coin> coins;
     private int score;
+    private float  curr_speed;
     private String ScoreStr;
     private String jump_time_str;
     private Log log;
@@ -54,11 +57,14 @@ public class TwoPlayerCoopTimingCoinsState extends State{
 
     public TwoPlayerCoopTimingCoinsState(GameStateManager gsm) {
         super(gsm);
+        System.out.println("1");
+
         player = new Player(50,300);
         cam.setToOrtho(false, flappy_game.WIDTH/2f, flappy_game.HEIGHT/2f);
         bg = new Texture("800_bg.png");
         score = 0;
         ScoreStr = "Score: 0";
+        System.out.println("2");
 
         font = new BitmapFont();
         font.setUseIntegerPositions(false);
@@ -66,14 +72,17 @@ public class TwoPlayerCoopTimingCoinsState extends State{
         coins = new ArrayList<Coin>();
 
         coins.add(new Coin(START_GAP, 1, 1));
-
+        System.out.println("3");
 
         log = new Log("C:/Users/maxwe/Documents/SCHOOL/SURF/Team flow/Gameplay data/","TwoPlayerCoopTimingCoinsState");
         for(int i = 1; i< COIN_COUNT; i++){ //keep a list of coins. do not reposition them, just
 //            coins.add(new Coin(i* (COIN_SPACING + Coin.COIN_WIDTH ), 0, 1));
             coins.add(new Coin(START_GAP + i* (COIN_SPACING + Coin.COIN_WIDTH ), (coins.get(i-1)).getPos().y, 2));
         }
-        log.log_event(time,Log.START_GAME);
+        System.out.println("4");
+
+//
+        log.log_event(time,Log.START_GAME, 0);
 
 
     }
@@ -81,39 +90,35 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     @Override
     protected void handleInput() { // check if the keys are pressed within 50 ms of eachother
 
-        if(!one_pressed && !two_pressed){  // if neither key has been pressed
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)){ //check if p1
+            if(!one_pressed && !two_pressed){
                 one_pressed = true;
-                log.log_event(time, Log.P1_JUMP);
-            }else if(Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)) {
-                two_pressed = true;
-                log.log_event(time, Log.P2_JUMP);
+            }else if (one_pressed){ //p1 alr pressed
+                log.log_event(time, Log.P1_OFF_TIME_PRESS, player.getPosition().y);
+//                one_pressed = true;
+            } else if (two_pressed){
+                log.log_event(time, Log.P1_JUMP, player.getPosition().y);
+                one_pressed = false;
+                two_pressed = false;
+                player.jump();
+                jump_time = 0;
             }
         }
 
-        if(one_pressed && (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT))) {
-            log.log_event(time, Log.P1_JUMP);
-            one_pressed = false;
-            two_pressed = false;
-            player.jump();
-            jump_time = 0;
-        } else if(two_pressed && Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) {
-            log.log_event(time, Log.P2_JUMP);
-            one_pressed = false;
-            two_pressed = false;
-            player.jump();
-            jump_time = 0;
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT) && Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) {
-            // DOES THIS EVER HAPPEN????
-            log.log_event(time, Log.P2_JUMP);
-            log.log_event(time, Log.P1_JUMP);
-            one_pressed = false;
-            two_pressed = false;
-            player.jump();
-            jump_time = 0;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)){
+            if(!one_pressed && !two_pressed){
+                two_pressed = true;
+            }else if(two_pressed){ //p2 alr pressed
+                log.log_event(time, Log.P2_OFF_TIME_PRESS, player.getPosition().y);
+//                two_pressed = true;
+            } else if (one_pressed){
+                log.log_event(time, Log.P2_JUMP, player.getPosition().y);
+                one_pressed = false;
+                two_pressed = false;
+                player.jump();
+                jump_time = 0;
+            }
         }
-
-
 
         if (PAUSE){
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
@@ -125,6 +130,12 @@ public class TwoPlayerCoopTimingCoinsState extends State{
             }
         }
 
+        if(Gdx.input.isKeyJustPressed(Input.Keys.E)){
+            log.log_event(time, Log.END_GAME, 0);
+            log.close();
+            gsm.set(new MenuState(gsm));
+        }
+
     }
 
     @Override
@@ -133,23 +144,38 @@ public class TwoPlayerCoopTimingCoinsState extends State{
 
         if (!PAUSE){
             time += dt;
+            player_pos_cooldown += dt;
             if (time>GAME_DURATION){
-                log.log_event(time, Log.END_GAME);
+                log.log_event(time, Log.END_GAME, 0);
                 log.close();
                 gsm.set(new MenuState(gsm));
             }
 
-            if(one_pressed || two_pressed){
+            if (player_pos_cooldown > player_pos_rate){ // every 50ms, log players position
+                log.log_event(time, Log.PLAYER_Y, player.getPosition().y);
+                player_pos_cooldown = 0;
+            }
+
+            if(one_pressed || two_pressed){ // if either player presses, then start timer
                 jump_time += dt;
             }
-            if(jump_time > jump_time_window){
-                one_pressed = false;
-                two_pressed = false;
+            if(jump_time > jump_time_window){ //reset the presses if the other button is not pressed in time
+                if (one_pressed){
+                    log.log_event(time-jump_time,Log.P1_OFF_TIME_PRESS, (float) (player.getPosition().y - player.getVelocity().y * jump_time + 0.5 * (player.getGravity()) * Math.pow(jump_time, 2f)) );
+                    one_pressed = false;
+
+                } else if (two_pressed){
+                    log.log_event(time-jump_time,Log.P2_OFF_TIME_PRESS, (float) (player.getPosition().y - player.getVelocity().y * jump_time + 0.5 * (player.getGravity()) * Math.pow(jump_time, 2f)) );
+                    two_pressed = false;
+
+                }
                 jump_time = 0;
             }
 
             /////// STREAK TOGGLE
-            player.setSpeed(default_player_speed*( 1f + (streak / 10f) )); //move to coin collision event
+            curr_speed = default_player_speed*( 1+ ((float)Math.log((streak+2.))/4 ) );
+            player.setSpeed(curr_speed); //move to coin collision event
+//            System.out.println(curr_speed);
             player.update(dt );
 //            player.update(dt*(1f+(streak/2f));
 
@@ -159,34 +185,43 @@ public class TwoPlayerCoopTimingCoinsState extends State{
 
             for(int i = 0; i< COIN_COUNT; i++){
                 Coin coin = coins.get(i);
+
+
+                if(player.getPosition().x > coin.getPos().x + coin.getCoin().getWidth()){ //if player is to the right of the coin
+
+                    if (!coin.isHit() && !coin.isPassed()){ // and they didnt hit the coin yet
+                        log.log_event(time, Log.MISS_COIN, coin.getPos().y); //log the miss
+                        streak = 0;
+                        coin.setPassed(); // setting this prevents the function from running again
+
+                        float time_from_player = (coin.getCoin().getWidth()/curr_speed);
+                        log.log_event(time - time_from_player, Log.COIN_Y, coin.getPos().y);
+                    }
+                }
+
                 if(cam.position.x - (cam.viewportWidth/2) > coin.getPos().x + coin.getCoin().getWidth()){ //repostition each pipe
                     // normal random reposition
 //                    coin.reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT));
                     // reposition closer to last coin
-                    if (!coin.isHit()){
-                        log.log_event(time, Log.MISS_COIN);
-                        streak = 0;
-                    }
-
                     coin.close_reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT),
                                             (coins.get(i==0?coins.size()-1:i-1)).getPos().y );
-
-
                 }
 
-//                if (!coin.isHit()){
-//                    if(player.getPosition().x > coin.getPos().x + coin.getCoin().getWidth()){ //if player is to the right of the coin
-//                        log.log_event(time, Log.MISS_COIN);
-//                    }
-//                }
-
                 if(coin.collides(player.getBounds()) ){ // CHECK IF A PALYER TOUCHES COIN
-                    log.log_event(time, Log.HIT_COIN);
+                    float time_from_player = (coin.getPos().x- player.getPosition().x) /curr_speed;
+                    log.log_event(time + time_from_player, Log.COIN_Y, coin.getPos().y);
+//                    System.out.println(coin.getPos().x);
+//                    System.out.println(player.getPosition().x);
+//                    System.out.println(curr_speed);
+//                    System.out.println(time_from_player);
+
+
+                    log.log_event(time, Log.HIT_COIN, coin.getPos().y);
                     score++;
                     streak++;
 //                    speed_mod
                     ScoreStr = "Score: " + score;
-                    System.out.println("SCOREEEE");
+                    System.out.println("SCORE");
 
                 }
 

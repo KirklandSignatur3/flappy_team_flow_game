@@ -79,16 +79,15 @@ public class MenuState extends State{
                 intHandle = refHandle.getValue();
 
                 //Take a measurement from AIN1 and display it.
-//                LJUD.eDO(intHandle, 0, 1);
-//                LJUD.eDO(intHandle, 0, 0);
-                LJUD.ePut(intHandle, LJUD.Constants.ioPUT_ANALOG_ENABLE_BIT,0, 2.50, 0);
+                LJUD.eDO(intHandle, 7, 1);
+                LJUD.eDO(intHandle, 7, 0);
+//                LJUD.ePut(intHandle, LJUD.Constants.ioPUT_ANALOG_ENABLE_BIT,0, 2.50, 0);
 
 //                for (int i = 0; i < 16; i++){
 //                    System.out.println(i);
 //                    LJUD.eDAC(intHandle, i, 2.50,0,0,0);
 //                }
-                LJUD.eDAC(intHandle, 0, 2.50,0,0,0);
-
+//                LJUD.eDAC(intHandle, 0, 2.50,0,0,0);
 
                 System.out.println("AIN" + posChannel + " = " +
                         refVoltage.getValue() + " volts");

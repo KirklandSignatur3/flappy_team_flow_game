@@ -12,7 +12,7 @@ public class Coin {
     // contains a top pipe, a bottom pipe, and a line thru the middle for the score line
     // points are added
     private static final int FLUCTUATION = 300;
-    private static final int CLOSE_FLUCTUATION = 200;
+    private static final int CLOSE_FLUCTUATION = 250;
     private static final int PIPE_GAP = 100; //gap between top and bottom
     private static final int LOWEST_SPAWN = 25; //
     public static final int COIN_WIDTH = 50;
@@ -21,10 +21,12 @@ public class Coin {
     private Rectangle boundsTop, boundsBottom, bounds;
     private Random rand;
     private boolean hit;
+    private boolean passed;
     public Coin(float x, float y, int type){
         coin = new Texture("coin.png"); //pipe_top.png
         rand = new Random();
         hit = false; //whether or not the player has hit it yet
+        passed = false;
 
         switch (type){
             case 1:
@@ -49,13 +51,16 @@ public class Coin {
     }
 
     public Boolean isHit() { return  hit;}
+    public void setPassed() {passed = true;}
+    public Boolean isPassed() { return  passed;}
+
     public Texture getCoin() {return coin;}
     public void reposition(float x){
         // moves the pipes to the right again, but at a new height
         pos = new Vector2(x, rand.nextInt(FLUCTUATION)  + LOWEST_SPAWN);
         bounds.setPosition(pos.x, pos.y);
         hit = false;
-    }
+        passed = false;    }
     public void close_reposition(float x, float y){
         // moves the pipes to the right again, but at a new height
         float new_y = y + (rand.nextInt(CLOSE_FLUCTUATION) -(CLOSE_FLUCTUATION/2f) );
@@ -68,6 +73,7 @@ public class Coin {
         System.out.println("new y =" + new_y);
         bounds.setPosition(pos.x, pos.y);
         hit = false;
+        passed = false;
     }
 
     public boolean collides(Rectangle player){
