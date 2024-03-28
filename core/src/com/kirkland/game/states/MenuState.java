@@ -55,7 +55,7 @@ public class MenuState extends State{
             gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){ // for the TwoPlayerCollisionCoinsState
-            gsm.set(new TwoPlayerCollisionCoinsState(gsm)); // collisisons, need to fix
+            gsm.set(new TwoPlayerCoopTimingCoinsTeamOnlyState(gsm)); // collisisons, need to fix
         }
 
 

@@ -2,26 +2,19 @@ package com.kirkland.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.kirkland.game.flappy_game;
 import com.kirkland.game.sprites.Coin;
+import com.kirkland.game.sprites.Log;
 import com.kirkland.game.sprites.Pipe;
 import com.kirkland.game.sprites.Player;
-import com.kirkland.game.sprites.Log;
-import com.badlogic.gdx.audio.Sound;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 
-import java.io.FileWriter;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDate;
 
-public class TwoPlayerCoopTimingCoinsState extends State{
+public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
     public final int COIN_SPACING = 125;// 125
     public final int START_GAP = 300;// 125
     private static final int COIN_COUNT = 8; //4 //4*125 = 500
@@ -61,7 +54,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     private Sound p2_press_sound;
 
 
-    public TwoPlayerCoopTimingCoinsState(GameStateManager gsm) {
+    public TwoPlayerCoopTimingCoinsTeamOnlyState(GameStateManager gsm) {
         super(gsm);
         System.out.println("1");
 
@@ -115,7 +108,11 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                 log.log_event(time, Log.P1_JUMP, player.getPosition().y);
                 one_pressed = false;
                 two_pressed = false;
-                player.jump();
+
+                if(Math.random()>.25){
+                    player.jump();
+                }
+
                 jump_time = 0;
             }
         }
@@ -131,7 +128,9 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                 log.log_event(time, Log.P2_JUMP, player.getPosition().y);
                 one_pressed = false;
                 two_pressed = false;
-                player.jump();
+                if(Math.random()>.25){
+                    player.jump();
+                }
                 jump_time = 0;
             }
         }

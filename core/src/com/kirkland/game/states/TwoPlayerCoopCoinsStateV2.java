@@ -26,6 +26,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
     public final int START_GAP = 300;// 125
     private static final int COIN_COUNT = 8; //4 //4*125 = 500
 
+
     private static final float GAME_DURATION = 180;
     private float time = 0;
     private float player_pos_cooldown  = 0; // timer for recording player pos
@@ -34,12 +35,10 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
     private Player player;
     private Texture bg;
     private int streak = 0;
+    private final float score_popup_duration = 0.7f;
+    private float score_popup_time = 0f;
     private float speed_mod = 0;
 
-    private boolean one_pressed = false;
-    private boolean two_pressed = false;
-    private float jump_time = 0f;
-    private float jump_time_window = 0.1f;
 
     private boolean PAUSE = false;
 
@@ -47,6 +46,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
     private ArrayList<Coin> coins;
     private int score;
     private int TURN = 1;
+    private int popupscore = 0;
 
     private float  curr_speed;
     private String ScoreStr;
@@ -111,6 +111,9 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
                 TURN = 2;
             } else{
                 log.log_event(time, Log.P1_OFF_TIME_PRESS, player.getPosition().y);
+                if (streak>0){
+                    streak--;
+                }
             }
 
         }
@@ -121,6 +124,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
                 TURN = 1;
             } else{
                 log.log_event(time, Log.P2_OFF_TIME_PRESS, player.getPosition().y);
+                streak--;
             }
 
         }
@@ -151,6 +155,11 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
         if (!PAUSE){
             time += dt;
             player_pos_cooldown += dt;
+
+            if (score_popup_time > 0f){
+                score_popup_time -= dt;
+            }
+
             if (time>GAME_DURATION){
                 log.log_event(time, Log.END_GAME, 0);
                 log.close();
@@ -160,22 +169,6 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
             if (player_pos_cooldown > player_pos_rate){ // every 50ms, log players position
                 log.log_event(time, Log.PLAYER_Y, player.getPosition().y);
                 player_pos_cooldown = 0;
-            }
-
-            if(one_pressed || two_pressed){ // if either player presses, then start timer
-                jump_time += dt;
-            }
-            if(jump_time > jump_time_window){ //reset the presses if the other button is not pressed in time
-                if (one_pressed){
-                    log.log_event(time-jump_time,Log.P1_OFF_TIME_PRESS, (float) (player.getPosition().y - player.getVelocity().y * jump_time + 0.5 * (player.getGravity()) * Math.pow(jump_time, 2f)) );
-                    one_pressed = false;
-
-                } else if (two_pressed){
-                    log.log_event(time-jump_time,Log.P2_OFF_TIME_PRESS, (float) (player.getPosition().y - player.getVelocity().y * jump_time + 0.5 * (player.getGravity()) * Math.pow(jump_time, 2f)) );
-                    two_pressed = false;
-
-                }
-                jump_time = 0;
             }
 
             /////// STREAK TOGGLE
@@ -192,9 +185,7 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
             for(int i = 0; i< COIN_COUNT; i++){
                 Coin coin = coins.get(i);
 
-
                 if(player.getPosition().x > coin.getPos().x + coin.getCoin().getWidth()){ //if player is to the right of the coin
-
                     if (!coin.isHit() && !coin.isPassed()){ // and they didnt hit the coin yet
                         log.log_event(time, Log.MISS_COIN, coin.getPos().y); //log the miss
                         streak = 0;
@@ -221,13 +212,16 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
 //                    System.out.println(curr_speed);
 //                    System.out.println(time_from_player);
 
-
                     log.log_event(time, Log.HIT_COIN, coin.getPos().y);
-                    score++;
+                    popupscore = (10 * (streak + 1));
+                    score +=+ popupscore;
                     streak++;
 //                    speed_mod
                     ScoreStr = "Score: " + score;
                     System.out.println("SCORE");
+                    score_popup_time += score_popup_duration; // for displaying added score when hitting coin
+
+
 
                 }
 
@@ -245,7 +239,12 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
         sb.begin();
         sb.draw(bg, cam.position.x - (cam.viewportWidth/2), 0);//OPEN THE BOX UP
 
-        sb.draw(player.getTexture1(), player.getPosition().x, player.getPosition().y);
+
+        if(TURN ==1){
+            sb.draw(player.getTexture1(), player.getPosition().x, player.getPosition().y);
+        } else{
+            sb.draw(player.getTexture2(), player.getPosition().x, player.getPosition().y);
+        }
         //draw the coins
 
         for(Coin coin: coins){
@@ -257,14 +256,17 @@ public class TwoPlayerCoopCoinsStateV2 extends State{
 //        font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         font.setColor(0f, 0f, 0f, 1.0f);
 
-        font.getData().setScale(1);
-        font.draw(sb, ScoreStr , player.getPosition().x-100, 395);
+        font.getData().setScale(0.8f);
+
+        String newscore_str = "";
+        if (score_popup_time > 0f){ // render the score if recently collided with a coin
+            newscore_str = "   + " + popupscore;
+        }
+        font.draw(sb, ScoreStr + newscore_str, player.getPosition().x-110, 395);
 //        System.out.println((jump_time_window - jump_time));
-        font.draw(sb, "Total Time: "+String.format("%.1f", time)+ "   Streak: " + streak, player.getPosition().x-100, 370);
+        font.draw(sb, "Time: "+String.format("%.1f", time)+ "   Streak: " + streak, player.getPosition().x-110, 370);
 
-        sb.end(); //close it...
-
-
+        sb.end(); //close it
     }
 
     @Override
