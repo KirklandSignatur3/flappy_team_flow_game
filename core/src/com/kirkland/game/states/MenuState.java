@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.util.Date;
+import com.badlogic.gdx.audio.Sound;
 
 ////
 
@@ -25,31 +26,42 @@ import com.labjack.LJUDException;
 
 public class MenuState extends State{
     private Texture background;
+    private Sound testSound;
+
+
 //    private Texture start_button;
 
     public MenuState (GameStateManager gsm){
         super (gsm);
         background = new Texture("title_screen.jpg");
 //        start_button = new Texture("start_button.png");
+        testSound = Gdx.audio.newSound(Gdx.files.internal("Bruh sound effect.mp3"));
+
 
     }
     @Override
     protected void handleInput() {
         // SWITCH TO SWITCH STATEMENT?
-        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            gsm.set(new TwoPlayerCoopState(gsm)); //creates a new Play State at the top of the stack
-        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){//creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerCoopState(gsm)); //pipes alternating game
+        } //
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
-            gsm.set(new TwoPlayerVsState(gsm)); //creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerVsState(gsm)); // both players on screen at same time
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){ // for the TwoPlayerCoopCoinsState
-            gsm.set(new TwoPlayerCoopCoinsStateV2(gsm)); //creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerCoopCoinsStateV2(gsm)); //
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){ // for the TwoPlayerCoopTimingCoinsState
-            gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){ // for the TwoPlayerCollisionCoinsState
-            gsm.set(new TwoPlayerCollisionCoinsState(gsm)); //creates a new Play State at the top of the stack
+            gsm.set(new TwoPlayerCollisionCoinsState(gsm)); // collisisons, need to fix
+        }
+
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.B)){
+            testSound.play(1.0f);
+            System.out.println("bruh");
         }
 
         // testing the labjack
@@ -148,6 +160,7 @@ public class MenuState extends State{
     @Override
     public void dispose() {
         background.dispose();
+        testSound.dispose();
 //        start_button.dispose();
         System.out.println("menu state disposed");
     }

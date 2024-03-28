@@ -92,18 +92,6 @@ public class TwoPlayerCoopCoinsState extends State{
         }
 
 
-        //
-//        if(TURN==1 && Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)){
-//            player.jump();
-//            log.log_event(time, Log.P1_JUMP);
-//            TURN = 2;
-//        }
-//        if(TURN==2 && Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)){
-//            player.jump();
-//            log.log_event(time, Log.P2_JUMP);
-//            TURN = 1;
-//        }
-
 
         if (PAUSE){
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
@@ -151,11 +139,7 @@ public class TwoPlayerCoopCoinsState extends State{
                     score++;
                     streak++;
                     System.out.println("SCOREEEE");
-
                 }
-
-
-
 
             }
 

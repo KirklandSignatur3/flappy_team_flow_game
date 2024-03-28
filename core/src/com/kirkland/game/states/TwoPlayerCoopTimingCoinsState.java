@@ -10,7 +10,7 @@ import com.kirkland.game.sprites.Coin;
 import com.kirkland.game.sprites.Pipe;
 import com.kirkland.game.sprites.Player;
 import com.kirkland.game.sprites.Log;
-
+import com.badlogic.gdx.audio.Sound;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -53,20 +53,32 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     BitmapFont font;
 //    private FreeTypeFontGenerator fontGenerator;
 
+    /// SOUND ///
+    private Sound p1_press_sound;
+    private Sound p2_press_sound;
 
 
     public TwoPlayerCoopTimingCoinsState(GameStateManager gsm) {
         super(gsm);
         System.out.println("1");
 
+        /// SOUNDS
+        p1_press_sound = Gdx.audio.newSound(Gdx.files.internal("Bruh sound effect.mp3"));
+
+//        p2_press_sound = Gdx.audio.newSound(Gdx.files.internal("sound.mp3"));
+
+        // TEXTURES
         player = new Player(50,300);
         cam.setToOrtho(false, flappy_game.WIDTH/2f, flappy_game.HEIGHT/2f);
         bg = new Texture("800_bg.png");
+
+        // NUMBERS
         score = 0;
         ScoreStr = "Score: 0";
         System.out.println("2");
 
-        font = new BitmapFont();
+
+        font = new BitmapFont(Gdx.files.internal("ds3.fnt"));
         font.setUseIntegerPositions(false);
 
         coins = new ArrayList<Coin>();
@@ -91,6 +103,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     protected void handleInput() { // check if the keys are pressed within 50 ms of eachother
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)){ //check if p1
+            p1_press_sound.play(1.0f);
             if(!one_pressed && !two_pressed){
                 one_pressed = true;
             }else if (one_pressed){ //p1 alr pressed
@@ -129,6 +142,9 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                 PAUSE = true;
             }
         }
+
+
+
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.E)){
             log.log_event(time, Log.END_GAME, 0);
@@ -248,14 +264,15 @@ public class TwoPlayerCoopTimingCoinsState extends State{
             }
         }
 
-        font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-        font.getData().setScale(2);
-        font.draw(sb, ScoreStr + "   " + jump_time_str, player.getPosition().x-100, 400);
+//        font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        font.setColor(0f, 0f, 0f, 1.0f);
+
+        font.getData().setScale(1);
+        font.draw(sb, ScoreStr + "   " + jump_time_str, player.getPosition().x-100, 395);
         jump_time_str = "Time: " + (jump_time_window - jump_time);
 //        System.out.println((jump_time_window - jump_time));
         font.draw(sb, jump_time_str, 500, 500);
-
-        font.draw(sb, "Total Time: "+String.format("%.1f", time)+ "   Streak: " + streak, player.getPosition().x-100, 375);
+        font.draw(sb, "Total Time: "+String.format("%.1f", time)+ "   Streak: " + streak, player.getPosition().x-100, 370);
 
         sb.end(); //close it...
 
@@ -266,6 +283,9 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     public void dispose() {
         bg.dispose();
         player.dispose();
+        p1_press_sound.dispose();
+//        p2_press_sound.dispose();
+        font.dispose();
         for(Coin coin : coins)
             coin.dispose();
         System.out.println("play state disposed");
