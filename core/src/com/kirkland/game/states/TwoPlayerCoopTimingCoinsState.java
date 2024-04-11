@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 public class TwoPlayerCoopTimingCoinsState extends State{
-    public final int COIN_SPACING = 125;// 125
+    public final int COIN_SPACING = 75;// original : 125
     public final int START_GAP = 300;// 125
     private static final int COIN_COUNT = 8; //4 //4*125 = 500
 
@@ -35,7 +35,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     private Texture bg;
     private int streak = 0;
     private float speed_mod = 0;
-    private final float score_popup_duration = 0.7f;
+    private float score_popup_duration = 0.7f;
     private float score_popup_time = 0f;
     private int popupscore = 0;
 
@@ -73,15 +73,15 @@ public class TwoPlayerCoopTimingCoinsState extends State{
         player = new Player(50,300);
         cam.setToOrtho(false, flappy_game.WIDTH/2f, flappy_game.HEIGHT/2f);
         bg = new Texture("800_bg.png");
-
+        score_popup_duration = ((COIN_SPACING/ player.getSpeed())/2) ;
         // NUMBERS
         score = 0;
         ScoreStr = "Score: 0";
         System.out.println("2");
 
-        font = new BitmapFont(Gdx.files.internal("ds3.fnt"));
+        font = new BitmapFont(Gdx.files.internal("commodore_22.fnt"));
         font.setUseIntegerPositions(false);
-
+        font.setColor(0f, 0f, 0f, 1.0f);
         coins = new ArrayList<Coin>();
 
         coins.add(new Coin(START_GAP, 1, 1));
@@ -151,6 +151,10 @@ public class TwoPlayerCoopTimingCoinsState extends State{
             log.close();
             gsm.set(new MenuState(gsm));
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.Z)){ bg.dispose(); bg = new Texture("white_bg.png");
+            font.setColor(0f, 0f, 0f, 1.0f);}
+        if(Gdx.input.isKeyJustPressed(Input.Keys.X)){ bg.dispose(); bg = new Texture("black_bg.png");
+            font.setColor(1f, 1f, 1f, 1.0f);}
 
     }
 
@@ -225,8 +229,8 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                     // normal random reposition
 //                    coin.reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT));
                     // reposition closer to last coin
-                    coin.close_reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT),
-                                            (coins.get(i==0?coins.size()-1:i-1)).getPos().y );
+                    coin.close_reposition(coin.getPos().x +((Coin.COIN_WIDTH + COIN_SPACING) * COIN_COUNT),
+                                         (coins.get(i==0?coins.size()-1:i-1)).getPos().y );
                 }
 
                 if(coin.collides(player.getBounds()) ){ // CHECK IF A PALYER TOUCHES COIN
@@ -259,33 +263,34 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
+        //draw the background
         sb.draw(bg, cam.position.x - (cam.viewportWidth/2), 0);//OPEN THE BOX UP
 
+        //draw the player
         sb.draw(player.getTexture1(), player.getPosition().x, player.getPosition().y);
-        //draw the coins
 
+        //draw the coins
         for(Coin coin: coins){
             if (!coin.isHit()){
                 sb.draw(coin.getCoin(), coin.getPos().x, coin.getPos().y);
             }
         }
 
-//        font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-        font.setColor(0f, 0f, 0f, 1.0f);
-
+//      font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+//        font.setColor(0f, 0f, 0f, 1.0f);
         font.getData().setScale(0.8f);
+
 //        font.draw(sb, ScoreStr + "   " + jump_time_str, player.getPosition().x-100, 395);
-
         jump_time_str = "Time: " + (jump_time_window - jump_time);
-
         String newscore_str = "";
         if (score_popup_time > 0f){ // render the score if recently collided with a coin
-            newscore_str = "   + " + popupscore;
+//            newscore_str = "   + " + popupscore;
+            font.draw(sb, ("+" + popupscore), player.getPosition().x+player.getWidth(), player.getPosition().y+ 2*player.getHeight());
         }
 
-        font.draw(sb, ScoreStr + newscore_str, player.getPosition().x-110, 395);
+        font.draw(sb, ScoreStr + newscore_str, player.getPosition().x-110, 370);
 //        System.out.println((jump_time_window - jump_time));
-        font.draw(sb, "Time: "+String.format("%.1f", time)+ "   Streak: " + streak, player.getPosition().x-110, 370);
+        font.draw(sb, "Time: "+String.format("%.1f", time)+ " Streak: " + streak, player.getPosition().x-110, 395);
 
 //        System.out.println((jump_time_window - jump_time));
 //        font.draw(sb, jump_time_str, 500, 500);

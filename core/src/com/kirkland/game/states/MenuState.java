@@ -42,6 +42,7 @@ public class MenuState extends State{
     @Override
     protected void handleInput() {
         // SWITCH TO SWITCH STATEMENT?
+        // 1,2 are old versions that use the pipes. 3,4,5 are
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){//creates a new Play State at the top of the stack
             gsm.set(new TwoPlayerCoopState(gsm)); //pipes alternating game
         } //
@@ -54,8 +55,8 @@ public class MenuState extends State{
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){ // for the TwoPlayerCoopTimingCoinsState
             gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){ // for the TwoPlayerCollisionCoinsState
-            gsm.set(new TwoPlayerCoopTimingCoinsTeamOnlyState(gsm)); // collisisons, need to fix
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){ // for the TwoPlayerCoopTimingCoins TeamOnlyState
+            gsm.set(new TwoPlayerCoopTimingCoinsTeamOnlyState(gsm)); //
         }
 
 

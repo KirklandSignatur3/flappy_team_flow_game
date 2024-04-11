@@ -45,7 +45,12 @@ public class Player {
         bounds.setPosition(position.x, position.y);
 
     }
-
+    public int getWidth() {
+        return player1.getWidth();
+    }
+    public int getHeight() {
+        return player1.getHeight();
+    }
     public Vector3 getPosition() {
         return position;
     }
