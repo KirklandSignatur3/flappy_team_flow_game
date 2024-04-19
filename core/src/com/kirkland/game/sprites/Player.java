@@ -17,6 +17,7 @@ public class Player {
     private Boolean colliding;
     private Texture player1;
     private Texture player2;
+    private Texture player_grey;
 
     private Texture player3;
 
@@ -26,6 +27,7 @@ public class Player {
         player1 = new Texture("player_red.png");
         player2 = new Texture("player_blue.png");
         player3 = new Texture("player_purple.png");
+        player_grey = new Texture("player_gray.png");
 
         bounds = new Rectangle(x,y,player1.getWidth(), player1.getHeight());
 //        bounds = new Circle(x,y,player1.getWidth());

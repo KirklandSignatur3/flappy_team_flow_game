@@ -1,3 +1,6 @@
+
+
+
 package com.kirkland.game.states;
 
 import com.badlogic.gdx.Gdx;
@@ -15,12 +18,17 @@ import com.kirkland.game.sprites.Player;
 import java.util.ArrayList;
 
 public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
-    public final int COIN_SPACING = 125;// 125
+    public final int COIN_SPACING = 75;// original : 125
     public final int START_GAP = 300;// 125
     private static final int COIN_COUNT = 8; //4 //4*125 = 500
 
-    private static final float GAME_DURATION = 180;
+    private static final float GAME_DURATION = 180; // 180 = 3 minutes
     private float time = 0;
+    private float no_jump_chance = 0.25f;
+    private int curr_bg = 0;
+    private float bg_change_timer = 0f;
+    private float bg_change_rate = 12f;
+
     private float player_pos_cooldown  = 0; // timer for recording player pos
     private final float player_pos_rate  = .1f; // records player postion every 50 ms (
     private int default_player_speed = 100;
@@ -28,7 +36,7 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
     private Texture bg;
     private int streak = 0;
     private float speed_mod = 0;
-    private final float score_popup_duration = 0.7f;
+    private float score_popup_duration = 0.7f;
     private float score_popup_time = 0f;
     private int popupscore = 0;
 
@@ -39,7 +47,7 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
 
     private boolean PAUSE = false;
 
-//    private Array<Pipe> pipes;
+    //    private Array<Pipe> pipes;
     private ArrayList<Coin> coins;
     private int score;
     private float  curr_speed;
@@ -50,8 +58,8 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
 //    private FreeTypeFontGenerator fontGenerator;
 
     /// SOUND ///
-    private Sound p1_press_sound;
-    private Sound p2_press_sound;
+
+    private Sound blip;
 
 
     public TwoPlayerCoopTimingCoinsTeamOnlyState(GameStateManager gsm) {
@@ -59,28 +67,33 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
         System.out.println("1");
 
         /// SOUNDS
-        p1_press_sound = Gdx.audio.newSound(Gdx.files.internal("Bruh sound effect.mp3"));
+//        p1_press_sound = Gdx.audio.newSound(Gdx.files.internal("Bruh sound effect.mp3"));
 //        p2_press_sound = Gdx.audio.newSound(Gdx.files.internal("sound.mp3"));
+        blip = Gdx.audio.newSound(Gdx.files.internal("bounceTwo.wav"));
 
         // TEXTURES
         player = new Player(50,300);
         cam.setToOrtho(false, flappy_game.WIDTH/2f, flappy_game.HEIGHT/2f);
-        bg = new Texture("800_bg.png");
+        bg = new Texture("black_bg.png");
+//        bg = new Texture("800_bg_gray.png");
 
+        score_popup_duration = ((COIN_SPACING/ player.getSpeed())/2) ;
         // NUMBERS
         score = 0;
         ScoreStr = "Score: 0";
         System.out.println("2");
 
-        font = new BitmapFont(Gdx.files.internal("ds3.fnt"));
+        font = new BitmapFont(Gdx.files.internal("commodore_22.fnt"));
         font.setUseIntegerPositions(false);
+//        font.setColor(0f, 0f, 0f, 1.0f);
+        font.setColor(1f, 1f, 1f, 1.0f);
 
         coins = new ArrayList<Coin>();
 
         coins.add(new Coin(START_GAP, 1, 1));
         System.out.println("3");
 
-        log = new Log("C:/Users/maxwe/Documents/SCHOOL/SURF/Team flow/Gameplay data/","TwoPlayerCoopTimingCoinsState");
+        log = new Log("C:/Users/maxwe/Documents/SCHOOL/SURF/Team flow/Gameplay data/","TwoPlayerCoopTimingCoinsTeamOnlyState");
         for(int i = 1; i< COIN_COUNT; i++){ //keep a list of coins. do not reposition them, just
 //            coins.add(new Coin(i* (COIN_SPACING + Coin.COIN_WIDTH ), 0, 1));
             coins.add(new Coin(START_GAP + i* (COIN_SPACING + Coin.COIN_WIDTH ), (coins.get(i-1)).getPos().y, 2));
@@ -97,7 +110,7 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
     protected void handleInput() { // check if the keys are pressed within 50 ms of eachother
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)){ //check if p1
-            p1_press_sound.play(1.0f);
+            blip.play(0.5f);
             if(!one_pressed && !two_pressed){
                 one_pressed = true;
             }else if (one_pressed){ //p1 alr pressed
@@ -108,16 +121,15 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
                 log.log_event(time, Log.P1_JUMP, player.getPosition().y);
                 one_pressed = false;
                 two_pressed = false;
-
-                if(Math.random()>.25){
+                if(Math.random()>no_jump_chance){ // log no jump?
                     player.jump();
                 }
-
                 jump_time = 0;
             }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)){
+            blip.play(0.5f, 2.0f, 0);
             if(!one_pressed && !two_pressed){
                 two_pressed = true;
             }else if(two_pressed){ //p2 alr pressed
@@ -128,7 +140,7 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
                 log.log_event(time, Log.P2_JUMP, player.getPosition().y);
                 one_pressed = false;
                 two_pressed = false;
-                if(Math.random()>.25){
+                if(Math.random()>no_jump_chance){ // log this?
                     player.jump();
                 }
                 jump_time = 0;
@@ -150,25 +162,51 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
             log.close();
             gsm.set(new MenuState(gsm));
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.Z)){ bg.dispose(); bg = new Texture("white_bg.png");
+            font.setColor(0f, 0f, 0f, 1.0f);}
+        if(Gdx.input.isKeyJustPressed(Input.Keys.X)){ bg.dispose(); bg = new Texture("black_bg.png");
+            font.setColor(1f, 1f, 1f, 1.0f);}
+        if(Gdx.input.isKeyJustPressed(Input.Keys.C)){ bg.dispose(); bg = new Texture("800_bg.png");
+            font.setColor(1f, 1f, 1f, 1.0f);}
+        if(Gdx.input.isKeyJustPressed(Input.Keys.V)){ bg.dispose(); bg = new Texture("800_bg_gray.png");
+            font.setColor(1f, 1f, 1f, 1.0f);}
 
     }
 
     @Override
     public void update(float dt) {
-        handleInput();
 
+        handleInput();
+        if (time > GAME_DURATION){
+            log.log_event(time, Log.END_GAME, 0);
+            log.close();
+            gsm.set(new MenuState(gsm));
+            return;
+        }
         if (!PAUSE){
+
             time += dt;
             player_pos_cooldown += dt;
+            bg_change_timer += dt;
+            if (bg_change_timer > bg_change_rate){
+                System.out.println("background change");
+                if(curr_bg == 0){ // if bg is white
+                    bg.dispose();
+                    bg = new Texture("black_bg.png");
+                    font.setColor(1f, 1f, 1f, 1.0f);
+                    curr_bg = 1 ;
+                    log.log_event(time, Log.BG_CHANGE_BLACK,0);
+                } else{
+                    bg.dispose(); bg = new Texture("white_bg.png");
+                    font.setColor(0f, 0f, 0f, 1.0f);
+                    log.log_event(time, Log.BG_CHANGE_WHITE,0);
+                    curr_bg = 0;
+                }
+                bg_change_timer = 0;
+            }
 
             if (score_popup_time > 0f){
                 score_popup_time -= dt;
-            }
-
-            if (time>GAME_DURATION){
-                log.log_event(time, Log.END_GAME, 0);
-                log.close();
-                gsm.set(new MenuState(gsm));
             }
 
             if (player_pos_cooldown > player_pos_rate){ // every 50ms, log players position
@@ -194,13 +232,12 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
             }
 
             /////// STREAK TOGGLE
+            // turn speed toggle on and
             curr_speed = default_player_speed*( 1+ ((float)Math.log((streak+2.))/4 ) );
             player.setSpeed(curr_speed); //move to coin collision event
 //            System.out.println(curr_speed);
             player.update(dt );
 //            player.update(dt*(1f+(streak/2f));
-
-
             cam.position.x = player.getPosition().x+80; //offset cam a bit in front of player
             //how to reposition thetubes
 
@@ -224,8 +261,8 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
                     // normal random reposition
 //                    coin.reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT));
                     // reposition closer to last coin
-                    coin.close_reposition(coin.getPos().x +((Pipe.PIPE_WIDTH + COIN_SPACING) * COIN_COUNT),
-                                            (coins.get(i==0?coins.size()-1:i-1)).getPos().y );
+                    coin.close_reposition(coin.getPos().x +((Coin.COIN_WIDTH + COIN_SPACING) * COIN_COUNT),
+                            (coins.get(i==0?coins.size()-1:i-1)).getPos().y );
                 }
 
                 if(coin.collides(player.getBounds()) ){ // CHECK IF A PALYER TOUCHES COIN
@@ -240,14 +277,25 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
                     popupscore = (10 * (streak + 1));
                     score +=+ popupscore;
                     streak++;
-//                    speed_mod
-                    ScoreStr = "Score: " + score;
+//                    if (streak % bg_change_streak == 0){
+//                        if(curr_bg == 0){ // if bg is white
+//                            bg.dispose(); bg = new Texture("black_bg.png");
+//                            font.setColor(1f, 1f, 1f, 1.0f);
+//                            curr_bg = 1 ;
+//                            log.log_event(time, Log.BG_CHANGE_BLACK,0);
+//                        } else{
+//                            bg.dispose(); bg = new Texture("white_bg.png");
+//                            font.setColor(0f, 0f, 0f, 1.0f);
+//                            log.log_event(time, Log.BG_CHANGE_WHITE,0);
+//                            curr_bg = 0;
+//                        }
+//                    }
+
                     System.out.println("SCORE");
                     score_popup_time += score_popup_duration;
                 }
 
             }
-
             cam.update();
         }
 
@@ -258,40 +306,34 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
+        //draw the background
         sb.draw(bg, cam.position.x - (cam.viewportWidth/2), 0);//OPEN THE BOX UP
-
+        //draw the player
         sb.draw(player.getTexture1(), player.getPosition().x, player.getPosition().y);
         //draw the coins
-
         for(Coin coin: coins){
             if (!coin.isHit()){
                 sb.draw(coin.getCoin(), coin.getPos().x, coin.getPos().y);
             }
         }
-
-//        font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-        font.setColor(0f, 0f, 0f, 1.0f);
-
         font.getData().setScale(0.8f);
-//        font.draw(sb, ScoreStr + "   " + jump_time_str, player.getPosition().x-100, 395);
-
         jump_time_str = "Time: " + (jump_time_window - jump_time);
+        ScoreStr = "Pts: " + score;
 
-        String newscore_str = "";
         if (score_popup_time > 0f){ // render the score if recently collided with a coin
-            newscore_str = "   + " + popupscore;
+//            newscore_str = "   + " + popupscore;
+            font.draw(sb, ("+" + popupscore), player.getPosition().x+player.getWidth(), player.getPosition().y+ 2*player.getHeight());
         }
 
-        font.draw(sb, ScoreStr + newscore_str, player.getPosition().x-110, 395);
+        font.draw(sb, "Time: "+String.format("%.1f", time), player.getPosition().x-110, 370);
 //        System.out.println((jump_time_window - jump_time));
-        font.draw(sb, "Time: "+String.format("%.1f", time)+ "   Streak: " + streak, player.getPosition().x-110, 370);
+        font.draw(sb, ScoreStr+ " Stk: " + streak, player.getPosition().x-110, 395);
 
 //        System.out.println((jump_time_window - jump_time));
 //        font.draw(sb, jump_time_str, 500, 500);
 
 //        System.out.println((jump_time_window - jump_time));
 //        font.draw(sb, "Time: "+String.format("%.1f", time), player.getPosition().x-110, 370);
-
         sb.end(); //close it...
 
 
@@ -301,11 +343,12 @@ public class TwoPlayerCoopTimingCoinsTeamOnlyState extends State{
     public void dispose() {
         bg.dispose();
         player.dispose();
-        p1_press_sound.dispose();
+
+        blip.dispose();
 //        p2_press_sound.dispose();
         font.dispose();
         for(Coin coin : coins)
             coin.dispose();
-        System.out.println("play state disposed");
+        System.out.println("TwoPlayerCoopTimingCoinsState state disposed");
     }
 }

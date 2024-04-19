@@ -13,8 +13,7 @@ public class Coin {
     // points are added
     private static final int FLUCTUATION = 300;
     private static final int CLOSE_FLUCTUATION = 250;
-    private static final int PIPE_GAP = 100; //gap between top and bottom
-    private static final int LOWEST_SPAWN = 25; //
+    private static final int LOWEST_SPAWN = 35; //
     public static final int COIN_WIDTH = 50;
     private Texture coin;
     private Vector2 pos, posBottomPipe;

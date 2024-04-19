@@ -23,7 +23,7 @@ public class flappy_game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		gsm = new GameStateManager();
 		gsm.push(new MenuState(gsm));
-		img = new Texture("badlogic.jpg");
+//		img = new Texture("badlogic.jpg");
 		Gdx.gl.glClearColor(1,0,0,1); //wipes screen, re-draws it fresh
 
 	}

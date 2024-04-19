@@ -27,6 +27,9 @@ public class Log {
     public static final int END_GAME = 8;
     public static final int PLAYER_Y = 9;
     public static final int COIN_Y = 10;
+    public static final int BG_CHANGE_WHITE = 11;
+    public static final int BG_CHANGE_BLACK = 12;
+
     private int intHandle = 0;
 //    private int posChannel = 1;
 //    private DoubleByReference refVoltage =
@@ -42,7 +45,7 @@ public class Log {
         try {
             fileWriter = new FileWriter(outputFile);
             csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader("time","p1 jump", "p2 jump", "p1 off time press", "p2 off time press",
-                    "hit coin", "miss coin", "start game", "end game", "player Y", "coin Y"));
+                    "hit coin", "miss coin", "start game", "end game", "player Y", "coin Y", "BG_CHANGE_WHITE", "BG_CHANGE_BLACK"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,8 +74,8 @@ public class Log {
                     LJUD.Constants.ctUSB, "1", 1, refHandle);
             intHandle = refHandle.getValue();
 
-
             /////////////// FOR TESTING ALL THECHANNELS
+
 //            for  (int j=1; j<11; j++){
 //                Thread.sleep(1000);
 //                for (int i=0; i<8; i++) {
@@ -144,46 +147,54 @@ public class Log {
         try {
             switch(event){
                 case 1: // p1 jump
-                    csvPrinter.printRecord(time, 1, 0, 0, 0, 0, 0, 0, 0, pos, 0);
+                    csvPrinter.printRecord(time, 1, 0, 0, 0, 0, 0, 0, 0, pos, 0,0 ,0 );
 
                     System.out.println("p1 jump");
                     break;
                 case 2: // p2 jump
-                    csvPrinter.printRecord(time, 0, 1, 0, 0, 0, 0, 0, 0, pos, 0);
+                    csvPrinter.printRecord(time, 0, 1, 0, 0, 0, 0, 0, 0, pos, 0,0 ,0 );
                     System.out.println("p2 jump");
                     break;
                 case 3: // p1 jump
-                    csvPrinter.printRecord(time, 0, 0, 1, 0, 0, 0, 0, 0, pos, 0);
+                    csvPrinter.printRecord(time, 0, 0, 1, 0, 0, 0, 0, 0, pos, 0,0 ,0 );
                     System.out.println("p1 off time press");
                     break;
                 case 4: // p2 jump
-                    csvPrinter.printRecord(time, 0, 0, 0, 1, 0, 0, 0, 0, pos, 0);
+                    csvPrinter.printRecord(time, 0, 0, 0, 1, 0, 0, 0, 0, pos, 0,0 ,0 );
                     System.out.println("p2 off time press");
                     break;
                 case 5:
-                    csvPrinter.printRecord(time, 0, 0, 0, 0, 1, 0, 0, 0, 0, pos);
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 1, 0, 0, 0, 0, pos,0 ,0 );
                     System.out.println("hit coin");
                     break;
                 case 6:
-                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 1, 0, 0, 0, pos);
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 1, 0, 0, 0, pos,0 ,0 );
                     System.out.println("miss coin");
 
                     break;
                 case 7:
-                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,0 ,0 );
                     System.out.println("Start Game");
                     break;
                 case 8:
-                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,0 ,0 );
                     System.out.println("End Game");
                     break;
                 case 9: // player Y
-                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 0, pos, 0);
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 0, pos, 0,0 ,0 );
                     System.out.println("Player Y pos");
                     break;
                 case 10: // Coin Y
-                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 0, 0, pos);
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 0, 0, pos,0 ,0 );
                     System.out.println("Coin Y pos");
+                    break;
+                case 11: // BG_CHANGE_WHITE
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,1 ,0 );
+                    System.out.println("BG_CHANGE_WHITE LOG");
+                    break;
+                case 12: // BG_CHANGE_BLACK
+                    csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 );
+                    System.out.println("BG_CHANGE_WHITE LOG");
                     break;
 
             }

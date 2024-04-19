@@ -1,5 +1,7 @@
 package com.kirkland.game.states;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.GL20;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -27,6 +29,8 @@ import com.labjack.LJUDException;
 public class MenuState extends State{
     private Texture background;
     private Sound testSound;
+    private Sound blip;
+
 
 
 //    private Texture start_button;
@@ -36,7 +40,9 @@ public class MenuState extends State{
         background = new Texture("title_screen.jpg");
 //        start_button = new Texture("start_button.png");
         testSound = Gdx.audio.newSound(Gdx.files.internal("Bruh sound effect.mp3"));
-
+        blip = Gdx.audio.newSound(Gdx.files.internal("pongBlip.wav"));
+        Gdx.gl.glClearColor( 1, 0, 0, 1 );
+        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
 
     }
     @Override
@@ -61,7 +67,8 @@ public class MenuState extends State{
 
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.B)){
-            testSound.play(1.0f);
+//            testSound.play(1.0f);
+            blip.play(1.0f);
             System.out.println("bruh");
         }
 
@@ -162,6 +169,7 @@ public class MenuState extends State{
     public void dispose() {
         background.dispose();
         testSound.dispose();
+        blip.dispose();
 //        start_button.dispose();
         System.out.println("menu state disposed");
     }
