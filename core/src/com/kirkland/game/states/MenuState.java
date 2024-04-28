@@ -37,14 +37,14 @@ public class MenuState extends State{
 
     public MenuState (GameStateManager gsm){
         super (gsm);
-        background = new Texture("title_screen.jpg");
+        background = new Texture("title_screen.png");
 //        start_button = new Texture("start_button.png");
         testSound = Gdx.audio.newSound(Gdx.files.internal("Bruh sound effect.mp3"));
         blip = Gdx.audio.newSound(Gdx.files.internal("pongBlip.wav"));
-        Gdx.gl.glClearColor( 1, 0, 0, 1 );
-        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
-
+        cam.setToOrtho(false, flappy_game.WIDTH/2f, flappy_game.HEIGHT/2f);
+        cam.position.x = 0;
     }
+
     @Override
     protected void handleInput() {
         // SWITCH TO SWITCH STATEMENT?
@@ -152,15 +152,20 @@ public class MenuState extends State{
     @Override
     public void update(float dt) {
         handleInput();
-
+        cam.position.x = 0;
     }
 
     @Override
     public void render(SpriteBatch sb) {
         //open, put in, the nclose
+        sb.setProjectionMatrix(cam.combined);
+
         sb.begin();
-        sb.draw(background, 0,0, flappy_game.WIDTH, flappy_game.HEIGHT);
         //starts drawing at bottom left
+//        sb.draw(background,0,0);'
+//        sb.setColor(0.5f, 0.5f, 0.5f, 1f);
+        sb.draw(background, 0, 0, 400, 400);
+//        sb.draw(background, cam.position.x - (cam.viewportWidth/2), 0,800,800);
 //        sb.draw(start_button , (flappy_game.WIDTH/2) - (start_button.getWidth()/2),(flappy_game.HEIGHT/2) - (start_button.getHeight()/2));
         sb.end();
     }

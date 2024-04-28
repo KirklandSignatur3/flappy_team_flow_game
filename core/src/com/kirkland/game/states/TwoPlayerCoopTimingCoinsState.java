@@ -160,6 +160,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
             log.log_event(time, Log.END_GAME, 0);
             log.close();
             gsm.set(new MenuState(gsm));
+            return;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.Z)){ bg.dispose(); bg = new Texture("white_bg.png");
             font.setColor(0f, 0f, 0f, 1.0f);}
@@ -183,19 +184,15 @@ public class TwoPlayerCoopTimingCoinsState extends State{
             return;
         }
         if (!PAUSE){
-
             time += dt;
             player_pos_cooldown += dt;
-
             if (score_popup_time > 0f){
                 score_popup_time -= dt;
             }
-
             if (player_pos_cooldown > player_pos_rate){ // every 50ms, log players position
                 log.log_event(time, Log.PLAYER_Y, player.getPosition().y);
                 player_pos_cooldown = 0;
             }
-
             if(one_pressed || two_pressed){ // if either player presses, then start timer
                 jump_time += dt;
             }
@@ -209,7 +206,6 @@ public class TwoPlayerCoopTimingCoinsState extends State{
                     two_pressed = false;
                     if (streak>0){ streak--; }
                 }
-
                 jump_time = 0;
             }
 
@@ -291,8 +287,10 @@ public class TwoPlayerCoopTimingCoinsState extends State{
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         //draw the background
-        sb.draw(bg, cam.position.x - (cam.viewportWidth/2), 0);//OPEN THE BOX UP
+//        sb.draw(bg, cam.position.x - (cam.viewportWidth/2), 0);
+        sb.draw(bg, cam.position.x - (cam.viewportWidth/2), 0, 800, 800);
         //draw the player
+
         sb.draw(player.getTexture1(), player.getPosition().x, player.getPosition().y);
         //draw the coins
         for(Coin coin: coins){
@@ -312,12 +310,6 @@ public class TwoPlayerCoopTimingCoinsState extends State{
         font.draw(sb, "Time: "+String.format("%.1f", time), player.getPosition().x-110, 370);
 //        System.out.println((jump_time_window - jump_time));
         font.draw(sb, ScoreStr+ " Stk: " + streak, player.getPosition().x-110, 395);
-
-//        System.out.println((jump_time_window - jump_time));
-//        font.draw(sb, jump_time_str, 500, 500);
-
-//        System.out.println((jump_time_window - jump_time));
-//        font.draw(sb, "Time: "+String.format("%.1f", time), player.getPosition().x-110, 370);
         sb.end(); //close it...
 
 
@@ -325,6 +317,7 @@ public class TwoPlayerCoopTimingCoinsState extends State{
 
     @Override
     public void dispose() {
+        cam.position.x = 0;
         bg.dispose();
         player.dispose();
 

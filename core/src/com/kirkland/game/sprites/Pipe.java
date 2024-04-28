@@ -15,7 +15,7 @@ public class Pipe {
     // contains a top pipe, a bottom pipe, and a line thru the middle for the score line
     // points are added
     private static final int FLUCTUATION = 130;
-    private static final int PIPE_GAP = 100; //gap between top and bottom
+    private static final int PIPE_GAP = 130; //gap between top and bottom
     private static final int LOWEST_SPAWN = 120; //
     public static final int PIPE_WIDTH = 50;
     private Texture topPipe, bottomPipe;
