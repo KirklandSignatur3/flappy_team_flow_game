@@ -66,12 +66,10 @@ public class TwoPlayerCoopTimingCoinsState extends State{
     private Sound blip;
 
     private int curr_bg = 0;
-    private float minBGDarkness = 0.1f; // 0-255
-
-    private float maxBGDarkness = 1f; // 0-255
-
-    private float BGChangeRate = 0.01f; // 0-1
-    private float currBGDarkness = minBGDarkness; // 0-255
+    private float minBGDarkness = 0.2f; // 0-1f
+    private float maxBGDarkness = 0.8f; // 0-1f
+    private float BGChangeRate = 0.01f; // 0-1f
+    private float currBGDarkness = minBGDarkness; // Starting darkness
 
 
 

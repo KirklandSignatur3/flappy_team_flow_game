@@ -51,7 +51,7 @@ public class TwoPlayerVsState extends State{
         pipes = new ArrayList<Pipe>();
 
         for(int i = 0; i<PIPE_COUNT; i++){
-            pipes.add(new Pipe(i* (PIPE_SPACING + Pipe.PIPE_WIDTH )));
+            pipes.add(new Pipe(i* (PIPE_SPACING + Pipe.PIPE_WIDTH ), 130, 140, 90, 50));
         }
 
     }

@@ -21,6 +21,8 @@ public class Log {
     public static final int P2_JUMP = 2;
     public static final int P1_OFF_TIME_PRESS = 3;
     public static final int P2_OFF_TIME_PRESS = 4;
+    public static final int HIT_PIPE = 5;
+    public static final int PASS_PIPE = 6;
     public static final int HIT_COIN = 5;
     public static final int MISS_COIN = 6;
     public static final int START_GAME = 7;
@@ -45,7 +47,7 @@ public class Log {
         try {
             fileWriter = new FileWriter(outputFile);
             csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader("time","p1 jump", "p2 jump", "p1 off time press", "p2 off time press",
-                    "hit coin", "miss coin", "start game", "end game", "player Y", "coin Y", "BG_CHANGE_WHITE", "BG_CHANGE_BLACK"));
+                    "hit pipe", "pass pipe", "start game", "end game", "player Y", "coin Y", "BG_CHANGE_WHITE", "BG_CHANGE_BLACK"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -165,11 +167,11 @@ public class Log {
                     break;
                 case 5:
                     csvPrinter.printRecord(time, 0, 0, 0, 0, 1, 0, 0, 0, 0, pos,0 ,0 );
-                    System.out.println("hit coin");
+                    System.out.println("hit pipe"); //hit coin
                     break;
                 case 6:
                     csvPrinter.printRecord(time, 0, 0, 0, 0, 0, 1, 0, 0, 0, pos,0 ,0 );
-                    System.out.println("miss coin");
+                    System.out.println("pass pipe"); // miss coin
 
                     break;
                 case 7:

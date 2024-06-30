@@ -24,13 +24,15 @@ public class Player {
     public Player(int x, int y){
         position = new Vector3(x,y,0);
         velocity = new Vector3(0,0,0);
-        player1 = new Texture("player_red.png");
-        player2 = new Texture("player_blue.png");
+        player1 = new Texture("player_red2.png");
+        player2 = new Texture("player_blue2.png");
         player3 = new Texture("player_purple.png");
         player_grey = new Texture("player_gray.png");
 
-        bounds = new Rectangle(x,y,player1.getWidth(), player1.getHeight());
-//        bounds = new Circle(x,y,player1.getWidth());
+//        bounds = new Rectangle(x,y,player1.getWidth(), player1.getHeight());
+//        bounds = new Rectangle(x,y,player1.getWidth(), player1.getHeight());
+
+        bounds = new Rectangle(x,y,25,25);
 //        bounds = new Circle(x,y,10);
 
     }
@@ -103,6 +105,7 @@ public class Player {
             colliding = false;
         }
     }
+
     public Rectangle getBounds() {
         return bounds;
     }

@@ -1,5 +1,6 @@
 package com.kirkland.game.states;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.GL20;
 
@@ -28,8 +29,16 @@ import com.labjack.LJUDException;
 
 public class MenuState extends State{
     private Texture background;
+    private Texture syncBG;
     private Sound testSound;
     private Sound blip;
+    private float BGSyncTimer = 0f;
+    private final float BGSyncDuration = 4f; // split between white and dark
+    private float minBGDarkness = 0f; // 0-1f
+    private float maxBGDarkness = 1f; // 0-1f
+    private float currBGDarkness = minBGDarkness;
+    private int gameSelected;
+    private Boolean gameStarted = false;
 
 
 
@@ -37,12 +46,15 @@ public class MenuState extends State{
 
     public MenuState (GameStateManager gsm){
         super (gsm);
-        background = new Texture("title_screen.png");
+        background = new Texture("title_screen_big.png");
+        syncBG = new Texture("white_bg.png");
 //        start_button = new Texture("start_button.png");
         testSound = Gdx.audio.newSound(Gdx.files.internal("Bruh sound effect.mp3"));
         blip = Gdx.audio.newSound(Gdx.files.internal("pongBlip.wav"));
         cam.setToOrtho(false, flappy_game.WIDTH/2f, flappy_game.HEIGHT/2f);
         cam.position.x = 0;
+        gameStarted = false;
+        System.out.println(gameStarted);
     }
 
     @Override
@@ -59,13 +71,19 @@ public class MenuState extends State{
             gsm.set(new TwoPlayerCoopCoinsStateV2(gsm)); //
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){ // for the TwoPlayerCoopTimingCoinsState
-            gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //
+//            gsm.set(new TwoPlayerCoopTimingCoinsState(gsm)); //
+            gsm.set(new TeamFlowPipeTurnsState(gsm));
+
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){ // for the TwoPlayerCoopTimingCoins TeamOnlyState
-            gsm.set(new TwoPlayerCoopTimingCoinsTeamOnlyState(gsm)); //
+            gameStarted = true;
+            gameSelected = 5;
         }
-
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)){ // for the TwoPlayerCoopTimingCoins TeamOnlyState
+//            gsm.set(new TeamOnlyPipeTurnsState(gsm)); //
+            gameStarted = true;
+            gameSelected = 6;
+        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.B)){
 //            testSound.play(1.0f);
             blip.play(1.0f);
@@ -120,7 +138,6 @@ public class MenuState extends State{
             }
         }
 
-
         // tesgint hte csv writng
         if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
             // Test for writing csv files
@@ -145,13 +162,33 @@ public class MenuState extends State{
             }
 
         }
-
-
     }
 
     @Override
     public void update(float dt) {
         handleInput();
+        // 1 sec white, 1 s dask
+        // syncTimer
+        if (gameStarted){ // begin the synb seq before starting the game
+            BGSyncTimer += dt;
+        }
+
+        if (BGSyncTimer > 5f){
+            // set background var ( var used when rendering)
+            currBGDarkness = maxBGDarkness; //white
+        } if (BGSyncTimer > 7f){
+//            gsm.set(new TeamOnlyPipeTurnsState(gsm));
+//            gsm.set(new TeamOnlyPipeTurnsState(gsm));
+            switch (gameSelected){
+                case 5:
+                    gsm.set(new TeamFlowPipeTurnsState(gsm));
+                case 6:
+                    gsm.set(new TeamOnlyPipeTurnsState(gsm));
+
+            }
+        }
+
+
         cam.position.x = 0;
     }
 
@@ -164,7 +201,21 @@ public class MenuState extends State{
         //starts drawing at bottom left
 //        sb.draw(background,0,0);'
 //        sb.setColor(0.5f, 0.5f, 0.5f, 1f);
-        sb.draw(background, 0, 0, 400, 400);
+        if(gameStarted) {
+//            System.out.println("syncing the bg render");
+
+            sb.setColor(currBGDarkness, currBGDarkness, currBGDarkness, 1f); // Sets the background. a=1f because it is solid
+            sb.draw(syncBG, 0, 0, 711, 400);
+            //        sb.setColor(currBGDarkness, currBGDarkness, currBGDarkness, 0f); // turn off the layer
+//            sb.setColor(Color.WHITE);
+        }
+
+        if(!gameStarted){
+//            System.out.println("redner noraml");
+            sb.draw(background, 0, 0, 711, 400);
+        }
+
+
 //        sb.draw(background, cam.position.x - (cam.viewportWidth/2), 0,800,800);
 //        sb.draw(start_button , (flappy_game.WIDTH/2) - (start_button.getWidth()/2),(flappy_game.HEIGHT/2) - (start_button.getHeight()/2));
         sb.end();

@@ -10,9 +10,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.kirkland.game.states.MenuState;
 
 public class flappy_game extends ApplicationAdapter {
-	public static final int WIDTH = 800;
+	public static final int WIDTH = 1422;
 	public static final int HEIGHT = 800;
-	public static final float SCALE = 0.5f;
+	public static final float SCALE = 0.5f; // 0.5f
 	public static final String TITLE = "FlappyBird";
 	private GameStateManager gsm;
 	private SpriteBatch Sprites; //only need one...
